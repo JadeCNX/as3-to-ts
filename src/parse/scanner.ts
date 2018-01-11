@@ -612,9 +612,13 @@ function verifyXML(string: string): boolean {
  * Something started with a lower sign <
  */
 function scanXMLOrOperator(scanner: AS3Scanner, startingCharacterc: string): Token {
-    let xmlToken = scanXML(scanner);
-    if (xmlToken !== null && verifyXML(xmlToken.text)) {
-        return xmlToken;
+    if(/^[a-z0-9]+$/i.test(scanner.nextChar())) { //HACK: Its only valid xml when the next token is alpha[numeric]
+        scanner.index--;
+        let xmlToken = scanXML(scanner);
+        if (xmlToken !== null && verifyXML(xmlToken.text)) {
+            console.log('Found XML!');
+            return xmlToken;
+        }
     }
     return scanCharacterSequence(scanner, startingCharacterc, ['<<<=', '<<<', '<<=', '<<', '<=']);
 }
