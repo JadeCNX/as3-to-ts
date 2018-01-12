@@ -398,11 +398,6 @@ function parseClassFunctions(parser:AS3Parser, result:Node, modifiers:Token[], m
 
 function parseFunction(parser:AS3Parser, meta:Node[], modifiers:Token[]):Node {
 
-    if(modifiers && modifiers.length === 0) {
-        var line:number = parser.scn.getNumLineBreaksBeforeIndex();
-        throw new Error("*** ERROR *** Class member modifier (public, private, internal) is required at line: " + line);
-    }
-
     let {type, name, params, returnType} = doParseSignature(parser);
     let result:Node = createNode(findFunctionTypeFromTypeNode(type), {start: type.start, end: -1, text: type.text});
 
@@ -524,10 +519,6 @@ function parseFunctionBlock(parser:AS3Parser):Node {
 
 
 export function parseVarList(parser:AS3Parser, meta:Node[], modifiers:Token[]):Node {
-    if(modifiers && modifiers.length === 0) {
-        var line:number = parser.scn.getNumLineBreaksBeforeIndex();
-        throw new Error("*** ERROR *** Class member modifier (public, private, internal) is required at line: " + line);
-    }
     let tok = consume(parser, Keywords.VAR);
     let result:Node = createNode(NodeKind.VAR_LIST, {start: tok.index, end: tok.end});
     result.children.push(convertMeta(parser, meta));
