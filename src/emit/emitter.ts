@@ -103,7 +103,7 @@ const VISITORS:{[kind:number]:NodeVisitor} = {
 	[NodeKind.IMPORT]: emitImport,
 	[NodeKind.EMBED]: emitEmbed,
 	[NodeKind.USE]: emitUse,
-	[NodeKind.FUNCTION]: emitFunction,
+	[NodeKind.FUNCTION]: emitMethod,
 	[NodeKind.LAMBDA]: emitFunction,
 	[NodeKind.FOREACH]: emitForEach,
 	[NodeKind.FORIN]: emitForIn,
