@@ -54,8 +54,10 @@ export function parseBlock(parser:AS3Parser, result?:Node):Node {
             console.log("parseBlock() - iter");
         }
         if (startsWith(parser.tok.text, MULTIPLE_LINES_COMMENT)) {
-            parser.currentFunctionNode.children.push(
-                createNode(NodeKind.MULTI_LINE_COMMENT, {tok: parser.tok}));
+            if(parser.currentFunctionNode != null) {
+                parser.currentFunctionNode.children.push(
+                    createNode(NodeKind.MULTI_LINE_COMMENT, {tok: parser.tok}));
+            }
             nextToken(parser);
         } else {
             result.children.push(parseStatement(parser));
@@ -95,6 +97,8 @@ function parseParameter(parser:AS3Parser):Node {
         let rest:Node = createNode(NodeKind.REST, {start: index, end: parser.tok.end, text: parser.tok.text});
         nextToken(parser, true); // rest
         result.children.push(rest);
+        //result.children.push(parseOptionalType(parser)); // optional type
+        parseOptionalType(parser);
     } else {
         result.children.push(parseNameTypeInit(parser));
     }
