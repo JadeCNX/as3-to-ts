@@ -390,20 +390,20 @@ function parseInterfaceContent(parser:AS3Parser):Node {
 
 function parseClassFunctions(parser:AS3Parser, result:Node, modifiers:Token[], meta:Node[]):void {
 
-    result.children.push(parseFunction(parser, meta, modifiers));
+    result.children.push(parseMethod(parser, meta, modifiers));
     meta.length = 0;
     modifiers.length = 0;
 }
 
 
-function parseFunction(parser:AS3Parser, meta:Node[], modifiers:Token[]):Node {
+export function parseMethod(parser:AS3Parser, meta:Node[], modifiers:Token[]):Node {
 
     let {type, name, params, returnType} = doParseSignature(parser);
     let result:Node = createNode(findFunctionTypeFromTypeNode(type), {start: type.start, end: -1, text: type.text});
 
     //if(VERBOSE >= 2) {
     if((VERBOSE_MASK & ReportFlags.PARSER_FUNCTIONS) == ReportFlags.PARSER_FUNCTIONS) {
-        console.log("parse-declarations.ts - parseFunction: " + name.text + "()" + ", line: " + parser.scn.lastLineScanned);
+        console.log("parse-declarations.ts - parseMethod: " + name.text + "()" + ", line: " + parser.scn.lastLineScanned);
     }
 
     if (parser.currentAsDoc) {

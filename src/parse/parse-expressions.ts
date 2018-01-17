@@ -6,6 +6,7 @@ import AS3Parser, {nextToken, tryParse, skip, consume, tokIs, VECTOR} from './pa
 import {parseParameterList, parseBlock} from './parse-common';
 import {parseOptionalType, parseVector} from './parse-types';
 import {parseArrayLiteral, parseObjectLiteral, parseShortVector} from './parse-literals';
+import {parseMethod} from './parse-declarations';
 import {VERBOSE_MASK} from '../config';
 import {ReportFlags} from '../reports/report-flags';
 
@@ -40,7 +41,7 @@ export function parsePrimaryExpression(parser:AS3Parser):Node {
     } else if (tokIs(parser, Operators.LEFT_CURLY_BRACKET)) {
         return parseObjectLiteral(parser);
     } else if (tokIs(parser, Keywords.FUNCTION)) {
-        return parseLambdaExpression(parser);
+        return parseFunction(parser);
     } else if (tokIs(parser, Keywords.NEW)) {
         return parseNewExpression(parser);
     } else if (tokIs(parser, Operators.LEFT_PARENTHESIS)) {
@@ -80,6 +81,18 @@ export function parsePrimaryExpression(parser:AS3Parser):Node {
 }
 
 
+function parseFunction(parser:AS3Parser):Node {
+    let currentToken = parser.tok;
+    let result = tryParse(parser, () => parseLambdaExpression(parser));
+    if (result) {
+        return result;
+    } else {
+        parser.tok = currentToken;
+        return parseMethod(parser, [], []);
+    }
+}
+
+
 function parseLambdaExpression(parser:AS3Parser):Node {
 
     //if(VERBOSE >= 2) {
@@ -88,14 +101,7 @@ function parseLambdaExpression(parser:AS3Parser):Node {
     }
 
     let tok = consume(parser, Keywords.FUNCTION);
-    let result:Node;
-
-    if (parser.tok.text === Operators.LEFT_PARENTHESIS) {
-        result = createNode(NodeKind.LAMBDA, {start: tok.index, end: parser.tok.end});
-    } else {
-        result = createNode(NodeKind.FUNCTION, {start: tok.index, end: parser.tok.end, text: parser.tok.text});
-        nextToken(parser, true);
-    }
+    let result:Node = createNode(NodeKind.LAMBDA, {start: tok.index, end: parser.tok.end});
     result.children.push(parseParameterList(parser));
     result.children.push(parseOptionalType(parser));
     result.children.push(parseBlock(parser));
