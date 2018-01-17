@@ -1446,7 +1446,7 @@ function emitMethod(emitter:Emitter, node:Node):void {
 		emitter.ensureImportIdentifier("bound", `${pathToRoot}bound`);
 
 		let mods = node.findChild(NodeKind.MOD_LIST);
-		if (mods) {
+		if (mods && mods.children.length > 0) {
 			emitter.catchup(mods.start);
 		} else {
 			emitter.catchup(name.start);
@@ -1710,7 +1710,7 @@ function emitPropertyDecl(emitter:Emitter, node:Node, isConst = false):void {
 
 function emitClassField(emitter:Emitter, node:Node):void {
 	let mods = node.findChild(NodeKind.MOD_LIST);
-	if (mods) {
+	if (mods && mods.children.length > 0) {
 		emitter.catchup(mods.start);
 		mods.children.forEach(node => {
 			emitter.catchup(node.start);
