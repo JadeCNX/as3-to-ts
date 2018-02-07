@@ -221,8 +221,8 @@ function parseClass(parser:AS3Parser, meta:Node[], modifier:Token[]):Node {
         } else if (tokIs(parser, Keywords.IMPLEMENTS)) {
             result.children.push(parseImplementsList(parser));
         }
-    }
-    while (!tokIs(parser, Operators.LEFT_CURLY_BRACKET));
+    } while (!tokIs(parser, Operators.LEFT_CURLY_BRACKET));
+    
     consume(parser, Operators.LEFT_CURLY_BRACKET);
     result.children.push(parseClassContent(parser));
     tok = consume(parser, Operators.RIGHT_CURLY_BRACKET);
@@ -399,7 +399,12 @@ function parseClassFunctions(parser:AS3Parser, result:Node, modifiers:Token[], m
 export function parseMethod(parser:AS3Parser, meta:Node[], modifiers:Token[]):Node {
 
     let {type, name, params, returnType} = doParseSignature(parser);
-    let result:Node = createNode(findFunctionTypeFromTypeNode(type), {start: type.start, end: -1, text: type.text});
+    let result:Node;
+    if(name === null) {
+        result = createNode(NodeKind.LAMBDA, {start: type.start, end: -1, text: type.text});
+    } else {
+        result = createNode(findFunctionTypeFromTypeNode(type), {start: type.start, end: -1, text: type.text});
+    }
 
     //if(VERBOSE >= 2) {
     if((VERBOSE_MASK & ReportFlags.PARSER_FUNCTIONS) == ReportFlags.PARSER_FUNCTIONS) {
@@ -422,7 +427,9 @@ export function parseMethod(parser:AS3Parser, meta:Node[], modifiers:Token[]):No
 
     result.children.push(convertMeta(parser, meta));
     result.children.push(convertModifiers(parser, modifiers));
-    result.children.push(name);
+    if(name !== null) {
+        result.children.push(name);
+    }
     result.children.push(params);
     result.children.push(returnType);
 
@@ -488,8 +495,12 @@ function doParseSignature(parser:AS3Parser) {
         }
 
     }
-    let name:Node = createNode(NodeKind.NAME, {tok: parser.tok});
-    nextToken(parser); // name
+
+    let name:Node = null;
+    if(!tokIs(parser, Operators.LEFT_PARENTHESIS)) {
+        name = createNode(NodeKind.NAME, {tok: parser.tok});
+        nextToken(parser); // name
+    }
     let params:Node = parseParameterList(parser);
     let returnType:Node = parseOptionalType(parser);
     return {type, name, params, returnType};
