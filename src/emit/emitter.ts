@@ -1186,14 +1186,15 @@ function getClassDeclarations(emitter:Emitter, className:string, contentsNode:No
 
 
 function emitClass(emitter:Emitter, node:Node):void {
-	emitter.catchup(node.start);
+	emitter.catchup(node.start); 
+
+	// insert @classBound with equal indentation for the next line
+	emitter.output = emitter.output.replace(/([\t ]*?)$/, "$1@classBound\n$1");
+
 	visitNode(emitter, node.findChild(NodeKind.META_LIST));
 	let mods = node.findChild(NodeKind.MOD_LIST);
-	if (mods && mods.children.length) {
+	if (mods && mods.children.length > 0) {
 		emitter.catchup(mods.start);
-
-		// insert @classBound with equal indentation for the next line
-		emitter.output = emitter.output.replace(/([^\S\n]*)$/, "$1@classBound\n$1"); 
 
 		let insertExport = false;
 		mods.children.forEach(node => {
@@ -1445,17 +1446,13 @@ function emitMethod(emitter:Emitter, node:Node):void {
 		let pathToRoot = ClassList.getLastPathToRoot();
 		emitter.ensureImportIdentifier("bound", `${pathToRoot}bound`);
 
-		let mods = node.findChild(NodeKind.MOD_LIST);
-		if (mods && mods.children.length > 0) {
-			emitter.catchup(mods.start);
-		} else {
-			emitter.catchup(name.start);
-		}
-
 		// insert @bound with equal indentation for the next line
-		emitter.output = emitter.output.replace(/([^\S\n]*)$/, "$1@bound\n$1");
+		emitter.catchup(node.start);
+		emitter.output = emitter.output.replace(/([\t ]*?)$/, "$1@bound\n$1");
 
 		emitClassField(emitter, node);
+		
+		emitter.consume("function",name.start);
 
 		emitter.catchup(name.end);
 
