@@ -1448,7 +1448,9 @@ function emitMethod(emitter:Emitter, node:Node):void {
 
 		// insert @bound with equal indentation for the next line
 		emitter.catchup(node.start);
-		emitter.output = emitter.output.replace(/([\t ]*?)$/, "$1@bound\n$1");
+		if(node.parent.kind != NodeKind.FUNCTION) { //Nested functions dont need classBound
+		    emitter.output = emitter.output.replace(/([\t ]*?)$/, "$1@bound\n$1");
+		}
 
 		emitClassField(emitter, node);
 		
