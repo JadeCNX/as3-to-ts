@@ -139,7 +139,7 @@ export function run(): void {
             fs.outputFileSync(outputFile, contents.replace(/\r\n/g, '\n'));
             fs.utimesSync(outputFile, nextLockTimestamp, nextLockTimestamp);
         } catch (e) {
-            console.error(`${e}`);
+            console.error(e.stack);
             numerrors++;
         }
         number ++;

@@ -55,7 +55,7 @@ export function parseBlock(parser: AS3Parser, result?: Node): Node {
             console.log('parseBlock() - iter');
         }
         if (startsWith(parser.tok.text, MULTIPLE_LINES_COMMENT)) {
-            if (parser.currentFunctionNode !== null) {
+            if (parser.currentFunctionNode !== undefined) {
                 parser.currentFunctionNode.children.push(
                     createNode(NodeKind.MULTI_LINE_COMMENT, {tok: parser.tok}));
             }
