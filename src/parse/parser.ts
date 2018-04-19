@@ -83,7 +83,7 @@ export function tryParse<T>(parser: AS3Parser, func: () => T): T {
  * token. If not, throw a runtime exception.
  */
 export function consume(parser: AS3Parser, text: string): Token {
-    while (startsWith(parser.tok.text, '//')) {
+    while (startsWith(parser.tok.text, '//') || startsWith(parser.tok.text, '/*')) {
         nextToken(parser);
     }
 
@@ -135,6 +135,13 @@ export function nextTokenIgnoringDocumentation(parser: AS3Parser): void {
         nextToken(parser);
     }
     while (startsWith(parser.tok.text, MULTIPLE_LINES_COMMENT));
+}
+
+
+export function skipDocumentation(parser: AS3Parser): void {
+    while (startsWith(parser.tok.text, MULTIPLE_LINES_COMMENT)) {
+        nextToken(parser);
+    }
 }
 
 
