@@ -33,7 +33,7 @@ export function parseQualifiedName(parser: AS3Parser, skipPackage: boolean): str
 export function parseBlock(parser: AS3Parser, result?: Node): Node {
 
     //if(VERBOSE >= 2) {
-    if ((VERBOSE_MASK & ReportFlags.PARSER_POINTS) == ReportFlags.PARSER_POINTS) {
+    if ((VERBOSE_MASK & ReportFlags.PARSER_POINTS) === ReportFlags.PARSER_POINTS) {
 
         console.log('parseBlock()' + ', line: ' + parser.scn.lastLineScanned);
     }
@@ -45,16 +45,17 @@ export function parseBlock(parser: AS3Parser, result?: Node): Node {
         result.start = tok.index;
     }
     //if(VERBOSE >= 2) {
-    if ((VERBOSE_MASK & ReportFlags.PARSER_POINTS) == ReportFlags.PARSER_POINTS) {
-        console.log('token: ' + parser.tok.text + ', index: ' + parser.tok.index + ', line: ' + parser.scn.lastLineScanned);
+    if ((VERBOSE_MASK & ReportFlags.PARSER_POINTS) === ReportFlags.PARSER_POINTS) {
+        console.log('token: ' + parser.tok.text + ', index: ' + parser.tok.index
+            + ', line: ' + parser.scn.lastLineScanned);
     }
     while (!tokIs(parser, Operators.RIGHT_CURLY_BRACKET)) {
         //if(VERBOSE >= 3) {
-        if ((VERBOSE_MASK & ReportFlags.PARSER_DETAILS) == ReportFlags.PARSER_DETAILS) {
+        if ((VERBOSE_MASK & ReportFlags.PARSER_DETAILS) === ReportFlags.PARSER_DETAILS) {
             console.log('parseBlock() - iter');
         }
         if (startsWith(parser.tok.text, MULTIPLE_LINES_COMMENT)) {
-            if (parser.currentFunctionNode != null) {
+            if (parser.currentFunctionNode !== null) {
                 parser.currentFunctionNode.children.push(
                     createNode(NodeKind.MULTI_LINE_COMMENT, {tok: parser.tok}));
             }

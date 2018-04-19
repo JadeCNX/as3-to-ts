@@ -201,7 +201,8 @@ function parseSwitchCases(parser: AS3Parser): Node {
 
 function parseSwitchBlock(parser: AS3Parser): Node {
     let result: Node = createNode(NodeKind.SWITCH_BLOCK, {start: parser.tok.index, end: parser.tok.end});
-    while (!tokIs(parser, Keywords.CASE) && !tokIs(parser, Keywords.DEFAULT) && !tokIs(parser, Operators.RIGHT_CURLY_BRACKET)) {
+    while (!tokIs(parser, Keywords.CASE) && !tokIs(parser, Keywords.DEFAULT)
+        && !tokIs(parser, Operators.RIGHT_CURLY_BRACKET)) {
         result.children.push(parseStatement(parser));
     }
     result.end = result.children.reduce((index: number, child: Node) => {
