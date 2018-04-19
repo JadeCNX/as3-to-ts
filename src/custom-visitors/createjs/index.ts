@@ -1,16 +1,16 @@
-import Node, { createNode } from "../../syntax/node";
-import NodeKind from "../../syntax/nodeKind";
+import Node, { createNode } from '../../syntax/node';
+import NodeKind from '../../syntax/nodeKind';
 import Emitter, {
     EmitterOptions,
     visitNode,
     visitNodes,
     emitIdent
-} from "../../emit/emitter";
+} from '../../emit/emitter';
 
 // import translations
 let imports = new Map<RegExp, string>();
-imports.set(/^flash.display.DisplayObjectContainer/, "createjs.Container");
-imports.set(/^flash.[a-z]+\.([A-Za-z]+)/, "createjs.$1");
+imports.set(/^flash.display.DisplayObjectContainer/, 'createjs.Container');
+imports.set(/^flash.[a-z]+\.([A-Za-z]+)/, 'createjs.$1');
 
 function visit (emitter: Emitter, node: Node): boolean {
 
@@ -18,9 +18,9 @@ function visit (emitter: Emitter, node: Node): boolean {
     // translate `MouseEvent.EVENT_NAME` to `"eventname"`
     //
     if (node.kind === NodeKind.DOT) {
-        if (node.children[0].text === "MouseEvent") {
+        if (node.children[0].text === 'MouseEvent') {
             emitter.catchup(node.start);
-            emitter.insert("\"" + node.children[1].text.replace("_", "").toLowerCase() + "\"");
+            emitter.insert('"' + node.children[1].text.replace('_', '').toLowerCase() + '"');
             emitter.skipTo(node.end);
 
             return true;
@@ -72,12 +72,12 @@ function postProcessing (emitterOptions: EmitterOptions, contents: string): stri
 const typeMap: { [id: string]: string } = {
     'DisplayObjectContainer': 'Container',
     'Sprite': 'Container'
-}
+};
 
 const identifierMap: { [id: string]: string } = {
     'DisplayObjectContainer': 'Container',
     'Sprite': 'Container'
-}
+};
 
 export default {
     imports: imports,
@@ -85,4 +85,4 @@ export default {
     postProcessing: postProcessing,
     typeMap: typeMap,
     identifierMap: identifierMap,
-}
+};

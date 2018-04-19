@@ -1,7 +1,7 @@
-import NodeKind, {nodeKindName} from './nodeKind';
+import NodeKind, { nodeKindName } from './nodeKind';
 import Token from '../parse/token';
-import {VERBOSE_MASK} from '../config';
-import {ReportFlags} from '../reports/report-flags';
+import { VERBOSE_MASK } from '../config';
+import { ReportFlags } from '../reports/report-flags';
 
 interface CreateNodeOptions {
     start?: number;
@@ -13,13 +13,13 @@ interface CreateNodeOptions {
 export function createNode(kind: NodeKind, options?: CreateNodeOptions, ... children: Node[]) {
     let start = -1;
     let end = -1;
-    let text:string;
+    let text: string;
     if (options) {
         text = options.text;
         if ('tok' in options) {
             start = options.tok.index;
             end = options.tok.end;
-            text = options.tok.text
+            text = options.tok.text;
         }
         if ('start' in options) {
             start = options.start;
@@ -40,9 +40,9 @@ export function createNode(kind: NodeKind, options?: CreateNodeOptions, ... chil
     node.children = children;
 
     //if(VERBOSE >= 3) {
-    if((VERBOSE_MASK & ReportFlags.CREATE_NODES) == ReportFlags.CREATE_NODES) {
+    if ((VERBOSE_MASK & ReportFlags.CREATE_NODES) == ReportFlags.CREATE_NODES) {
 
-        console.log("node.ts - createNode() - kind: " + nodeKindName(node.kind) + ", text: " + node.text);
+        console.log('node.ts - createNode() - kind: ' + nodeKindName(node.kind) + ', text: ' + node.text);
     }
 
     return node;
@@ -56,21 +56,21 @@ export default class Node {
     public children: Node[];
     public parent: Node; // only during emit
 
-    toString(offset:string = ""):string {
-        let str:string = (offset === "" ? "" : offset + "↳") + nodeKindName(this.kind);
-        if(this.text) {
-            str += ", text: '" + this.text + "'";
+    toString(offset: string = ''): string {
+        let str: string = (offset === '' ? '' : offset + '↳') + nodeKindName(this.kind);
+        if (this.text) {
+            str += ', text: \'' + this.text + '\'';
         }
-        str += "\n";
-        for(let i:number = 0; i < this.children.length; i++) {
-            const child:Node = this.children[i];
-            str += child.toString(offset + "  ");
+        str += '\n';
+        for (let i: number = 0; i < this.children.length; i++) {
+            const child: Node = this.children[i];
+            str += child.toString(offset + '  ');
         }
         return str;
     }
 
     findChild(kind: NodeKind): Node {
-        for (var i = 0; i < this.children.length; i++) {
+        for (let i = 0; i < this.children.length; i++) {
             if (this.children[i].kind === kind) {
                 return this.children[i];
             }
@@ -80,12 +80,12 @@ export default class Node {
 
     get previousSibling (): Node {
         let thisIdx = this.parent.children.indexOf(this);
-        return this.parent.children[thisIdx-1];
+        return this.parent.children[thisIdx - 1];
     }
 
     get nextSibling (): Node {
         let thisIdx = this.parent.children.indexOf(this);
-        return this.parent.children[thisIdx+1];
+        return this.parent.children[thisIdx + 1];
     }
 
     findChildren(kind: NodeKind): Node[] {

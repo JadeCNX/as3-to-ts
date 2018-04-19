@@ -30,7 +30,7 @@ function buildLineMap(text: string): number[] {
         }
     }
 
-    // Create a start for the final line.  
+    // Create a start for the final line.
     lineMap.push(lineStart);
 
     return lineMap;
@@ -62,7 +62,7 @@ export default class SourceFile {
         if (position === this.content.length) {
             line = lineStarts.length - 1;
         } else {
-            for (var i = 0; i < lineStarts.length; i++) {
+            for (let i = 0; i < lineStarts.length; i++) {
                 if (lineStarts[i] > position) {
                     break;
                 }

@@ -8,9 +8,9 @@ import fs = require('fs-extra');
 import path = require('path');
 import parseArgs = require('minimist');
 import readlineSync = require('readline-sync');
-import { CustomVisitor } from "./custom-visitors";
+import { CustomVisitor } from './custom-visitors';
 
-import { getLockTimestamp, updateLockTimestamp } from "./tool/lock";
+import { getLockTimestamp, updateLockTimestamp } from './tool/lock';
 
 function readdir(dir: string, prefix = '', result: string[] = []): string[] {
     fs.readdirSync(dir).forEach(file => {
@@ -63,15 +63,15 @@ export function run(): void {
         fs.mkdirSync(outputDir);
     }
 
-    let visitors = (args['visitors'])
-        ? args['visitors'].split(",").map((name: string) => require(`./custom-visitors/${name}`).default)
-        : []
-    let overwrite = !!args['overwrite'];
-    let commonjs = args['commonjs'];
-    let interactive = args['interactive'];
+    let visitors = (args.visitors)
+        ? args.visitors.split(',').map((name: string) => require(`./custom-visitors/${name}`).default)
+        : [];
+    let overwrite = !!args.overwrite;
+    let commonjs = args.commonjs;
+    let interactive = args.interactive;
 
     if (overwrite && interactive) {
-        console.error("You can't have '--overwrite' and '--interactive' at the same time.");
+        console.error('You can\'t have \'--overwrite\' and \'--interactive\' at the same time.');
         process.exit();
     }
 
@@ -90,7 +90,7 @@ export function run(): void {
         segments.pop();
 
         let identifier = segments.pop();
-        let ns = segments.join(".");
+        let ns = segments.join('.');
 
         if (!definitionsByNamespace[ ns ]) {
             definitionsByNamespace[ ns ] = [ ];
@@ -116,7 +116,7 @@ export function run(): void {
         let outputFile = path.resolve(outputDir, fileTs);
 
         if (!overwrite && fs.existsSync(outputFile)) {
-            let stat = fs.statSync(outputFile)
+            let stat = fs.statSync(outputFile);
             if (previousLockTimestamp.getTime() !== stat.mtime.getTime()) {
                 if (interactive && !readlineSync.keyInYN(`"${ fileTs }" has been modified. Overwrite it?`)) {
                     return;
@@ -136,7 +136,7 @@ export function run(): void {
                 }
             });
 
-            fs.outputFileSync(outputFile, contents.replace(/\r\n/g, "\n"));
+            fs.outputFileSync(outputFile, contents.replace(/\r\n/g, '\n'));
             fs.utimesSync(outputFile, nextLockTimestamp, nextLockTimestamp);
         } catch (e) {
             console.error(`${e}`);

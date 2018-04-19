@@ -1,2 +1,2 @@
-import {emit} from './emit/emitter';
+import { emit } from './emit/emitter';
 export = emit;

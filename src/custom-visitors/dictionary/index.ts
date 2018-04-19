@@ -2,14 +2,14 @@
  * Replace `Dictionary` to `Map<any, any>`
  */
 
-import Node, { createNode } from "../../syntax/node";
-import NodeKind from "../../syntax/nodeKind";
+import Node, { createNode } from '../../syntax/node';
+import NodeKind from '../../syntax/nodeKind';
 import Emitter, {
     EmitterOptions,
     visitNode,
     visitNodes,
     emitIdent
-} from "../../emit/emitter";
+} from '../../emit/emitter';
 
 function visit (emitter: Emitter, node: Node): boolean {
 
@@ -23,12 +23,12 @@ function visit (emitter: Emitter, node: Node): boolean {
     if (node.kind === NodeKind.FORIN || node.kind === NodeKind.FOREACH) {
         let lookInTarget = node.findChild(NodeKind.IN).findChild(NodeKind.IDENTIFIER);
         let definition = lookInTarget && emitter.findDefInScope(lookInTarget.text);
-        if (definition && definition.type === "Map<any, any>") {
+        if (definition && definition.type === 'Map<any, any>') {
             emitter.catchup(node.start);
 
             let deepestFirstNode = node;
             do {
-                deepestFirstNode = deepestFirstNode.children[0]
+                deepestFirstNode = deepestFirstNode.children[0];
             } while (deepestFirstNode.children.length > 0);
 
             emitter.insert(`for (let ${ deepestFirstNode.text } of `);
@@ -61,10 +61,10 @@ function visit (emitter: Emitter, node: Node): boolean {
     //
     if (node.kind === NodeKind.ARGUMENTS) {
         let previousSibling = node.previousSibling;
-        if (previousSibling.kind === NodeKind.IDENTIFIER && previousSibling.text === "Map<any, any>") {
+        if (previousSibling.kind === NodeKind.IDENTIFIER && previousSibling.text === 'Map<any, any>') {
             // translate `new Dictionary(true)` into `new Map()`
             emitter.catchup(node.start);
-            emitter.insert("()");
+            emitter.insert('()');
             emitter.skipTo(node.end);
             return true;
         }
@@ -84,12 +84,12 @@ function visit (emitter: Emitter, node: Node): boolean {
 
                 emitter.skipTo(leftNode.start);
                 emitIdent(emitter, leftNode);
-                emitter.insert(".delete(");
+                emitter.insert('.delete(');
 
                 emitter.skipTo(rightNode.start);
                 visitNode(emitter, rightNode);
                 emitter.catchup(rightNode.end);
-                emitter.insert(")");
+                emitter.insert(')');
                 emitter.skipTo(node.end);
 
                 return true;
@@ -107,11 +107,11 @@ function visit (emitter: Emitter, node: Node): boolean {
 
             emitter.catchup(node.start);
             emitIdent(emitter, leftNode);
-            emitter.insert(".get(");
+            emitter.insert('.get(');
             emitter.skipTo(rightNode.start);
             visitNode(emitter, rightNode);
             emitter.catchup(rightNode.end);
-            emitter.insert(")");
+            emitter.insert(')');
 
             if (subsequentNodes.length > 0) {
                 // emitter.skipTo(subsequentNodes[0].start-1);
@@ -119,7 +119,7 @@ function visit (emitter: Emitter, node: Node): boolean {
                 // emitter.skipTo(node.end-1);
 
                 emitter.skipTo(subsequentNodes[0].start);
-                emitter.insert("[ ");
+                emitter.insert('[ ');
                 visitNodes(emitter, subsequentNodes);
                 // emitter.skipTo(subsequentNodes[subsequentNodes.length-1].end);
 
@@ -141,7 +141,7 @@ function visit (emitter: Emitter, node: Node): boolean {
             : node.children[0].findChild(NodeKind.IDENTIFIER);
 
         let definition = identifierNode && emitter.findDefInScope(identifierNode.text);
-        if (definition && definition.type === "Map<any, any>") {
+        if (definition && definition.type === 'Map<any, any>') {
 
             let arrayAccessorNode = node.findChild(NodeKind.ARRAY_ACCESSOR);
             if (arrayAccessorNode) {
@@ -153,19 +153,19 @@ function visit (emitter: Emitter, node: Node): boolean {
 
                     emitter.catchup(node.start);
                     emitIdent(emitter, leftNode);
-                    emitter.insert(".set(");
+                    emitter.insert('.set(');
 
                     emitter.skipTo(rightNode.start);
                     visitNode(emitter, rightNode);
                     emitter.catchup(rightNode.end);
 
-                    emitter.insert(", ");
+                    emitter.insert(', ');
 
                     emitter.skipTo(valueNode.start);
                     visitNode(emitter, valueNode);
 
                     emitter.catchup(valueNode.end);
-                    emitter.insert(")");
+                    emitter.insert(')');
 
                     emitter.skipTo(node.end);
 
@@ -185,7 +185,7 @@ function getMapNodes (emitter: Emitter, node: Node) {
     if (node.kind === NodeKind.ARRAY_ACCESSOR) {
         let definition = emitter.findDefInScope(node.children[0].text);
 
-        if (definition && definition.type === "Map<any, any>") {
+        if (definition && definition.type === 'Map<any, any>') {
             nodes = node.children;
         }
     }
@@ -195,7 +195,7 @@ function getMapNodes (emitter: Emitter, node: Node) {
 
 function postProcessing (emitterOptions: EmitterOptions, contents: string): string {
     // Remove dictionary imports
-    contents = contents.replace(/import { Dictionary } from "[^"]+";/gm, "");
+    contents = contents.replace(/import { Dictionary } from "[^"]+";/gm, '');
 
     return contents;
 }
@@ -203,4 +203,4 @@ function postProcessing (emitterOptions: EmitterOptions, contents: string): stri
 export default {
     visit: visit,
     postProcessing: postProcessing
-}
+};

@@ -1,11 +1,11 @@
-import Node, { createNode } from "../../syntax/node";
-import NodeKind from "../../syntax/nodeKind";
+import Node, { createNode } from '../../syntax/node';
+import NodeKind from '../../syntax/nodeKind';
 import Emitter, {
     EmitterOptions,
     visitNode,
     visitNodes,
     emitIdent
-} from "../../emit/emitter";
+} from '../../emit/emitter';
 
 function visit (emitter: Emitter, node: Node): boolean {
 
@@ -18,7 +18,7 @@ function visit (emitter: Emitter, node: Node): boolean {
             let dotLeftNode = node.children[0].children[0];
             let dotRightNode = node.children[0].children[1];
 
-            if (dotLeftNode.text === "StringUtil") {
+            if (dotLeftNode.text === 'StringUtil') {
                 let contentNode = node.children[1].children[0];
 
                 emitter.catchup(node.start);
@@ -37,7 +37,7 @@ function visit (emitter: Emitter, node: Node): boolean {
 
 function postProcessing (emitterOptions: EmitterOptions, contents: string): string {
     // Remove StringUtil imports (mx.utils.StringUtil)
-    contents = contents.replace(/import { StringUtil } from ".*mx\/utils\/StringUtil";/gm, "");
+    contents = contents.replace(/import { StringUtil } from ".*mx\/utils\/StringUtil";/gm, '');
 
     return contents;
 }
@@ -45,4 +45,4 @@ function postProcessing (emitterOptions: EmitterOptions, contents: string): stri
 export default {
     visit: visit,
     postProcessing: postProcessing
-}
+};

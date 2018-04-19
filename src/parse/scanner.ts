@@ -30,14 +30,14 @@
  */
 
 
-import {VERBOSE_MASK, WARNINGS, AUTO_INSERT_SEMICOLONS} from '../config';
+import { VERBOSE_MASK, WARNINGS, AUTO_INSERT_SEMICOLONS } from '../config';
 import Token from './token';
 import * as Keywords from '../syntax/keywords';
-import {startsWith, endsWith} from '../string';
+import { startsWith, endsWith } from '../string';
 
 import sax = require('sax');
 import objectAssign = require('object-assign');
-import {ReportFlags} from '../reports/report-flags';
+import { ReportFlags } from '../reports/report-flags';
 
 export interface CheckPoint {
     index: number;
@@ -56,10 +56,10 @@ export default class AS3Scanner {
     inVector: boolean = false;
     index: number;
     content: string = '';
-    lastTokenText:String = "";
-    lastLineScanned:number = 0;
-    missedSemi:Boolean = false;
-    queuedToken:Token = null;
+    lastTokenText: String = '';
+    lastLineScanned: number = 0;
+    missedSemi: Boolean = false;
+    queuedToken: Token = null;
 
     setContent(content: string = ''): void {
         this.inVector = false;
@@ -101,8 +101,8 @@ export default class AS3Scanner {
         }
 
         //if(VERBOSE >= 2) {
-        if((VERBOSE_MASK & ReportFlags.SCANNER_POINTS) == ReportFlags.SCANNER_POINTS) {
-            console.log("  scanner - token: " + text + ", line: " + this.getNumLineBreaksBeforeIndex());
+        if ((VERBOSE_MASK & ReportFlags.SCANNER_POINTS) == ReportFlags.SCANNER_POINTS) {
+            console.log('  scanner - token: ' + text + ', line: ' + this.getNumLineBreaksBeforeIndex());
         }
 
         this.lastTokenText = text;
@@ -110,11 +110,11 @@ export default class AS3Scanner {
         return new Token(text, options.index, options.isNumeric, options.isXML);
     }
 
-    getNumLineBreaksBeforeIndex():number {
-        var sub:string = this.content.substr(0, this.index);
-        var dump:string[] = sub.split("\n");
-        if(dump.length == 0) { dump = sub.split("\r"); }
-        if(dump.length == 0) { dump = sub.split("\r\n"); }
+    getNumLineBreaksBeforeIndex(): number {
+        let sub: string = this.content.substr(0, this.index);
+        let dump: string[] = sub.split('\n');
+        if (dump.length == 0) { dump = sub.split('\r'); }
+        if (dump.length == 0) { dump = sub.split('\r\n'); }
         return dump.length;
     }
 
@@ -139,25 +139,24 @@ export default class AS3Scanner {
         }
 
         //if(VERBOSE >= 3) {
-        if((VERBOSE_MASK & ReportFlags.SCANNER_DETAILS) == ReportFlags.SCANNER_DETAILS) {
-            console.log("  scanner - char: " + currentChar + ", index: " + this.index + ", inVector: " + this.inVector);
+        if ((VERBOSE_MASK & ReportFlags.SCANNER_DETAILS) == ReportFlags.SCANNER_DETAILS) {
+            console.log('  scanner - char: ' + currentChar + ', index: ' + this.index + ', inVector: ' + this.inVector);
         }
 
-        if(isNewLineChar(currentChar)) {
+        if (isNewLineChar(currentChar)) {
 
             this.lastLineScanned = this.getNumLineBreaksBeforeIndex();
 
             // Check for missing semicolons in 'break' or 'continue' statements.
-            if(this.getPreviousCharacter() !== ";") {
-                var isCriticalToken = this.lastTokenText === Keywords.BREAK || this.lastTokenText === Keywords.CONTINUE;
-                var isValidToken = this.lastTokenText === "{" || this.lastTokenText === "}" || this.lastTokenText === "\n" || this.lastTokenText === ";";
+            if (this.getPreviousCharacter() !== ';') {
+                let isCriticalToken = this.lastTokenText === Keywords.BREAK || this.lastTokenText === Keywords.CONTINUE;
+                let isValidToken = this.lastTokenText === '{' || this.lastTokenText === '}' || this.lastTokenText === '\n' || this.lastTokenText === ';';
                 this.missedSemi = this.lastTokenText && !isValidToken;
-                if(WARNINGS >= 1 && this.lastTokenText && isCriticalToken) {
-                    console.warn("scanner.ts: *** IMPORTANT WARNING *** Dangerous missing semicolon in line: " + this.lastLineScanned + " after '" + this.lastTokenText + "' statement.\n" +
-                        "Missing semicolons around such statements can cause the transpiler to fail by entering and infinite loop.");
-                }
-                else if(WARNINGS >= 3 && this.missedSemi) {
-                    console.log("scanner.ts: *** WARNING *** Missing semicolon in line: " + this.lastLineScanned + ", last: >" + this.lastTokenText + "<");
+                if (WARNINGS >= 1 && this.lastTokenText && isCriticalToken) {
+                    console.warn('scanner.ts: *** IMPORTANT WARNING *** Dangerous missing semicolon in line: ' + this.lastLineScanned + ' after \'' + this.lastTokenText + '\' statement.\n' +
+                        'Missing semicolons around such statements can cause the transpiler to fail by entering and infinite loop.');
+                } else if (WARNINGS >= 3 && this.missedSemi) {
+                    console.log('scanner.ts: *** WARNING *** Missing semicolon in line: ' + this.lastLineScanned + ', last: >' + this.lastTokenText + '<');
                 }
             }
         }
@@ -191,28 +190,28 @@ export default class AS3Scanner {
     }
 }
 
-function isNewLineChar(char:string):boolean {
-    return char === "\n" || char === "\r" || char === "\r\n";
+function isNewLineChar(char: string): boolean {
+    return char === '\n' || char === '\r' || char === '\r\n';
 }
 
 function nextToken(scanner: AS3Scanner): Token {
 
-    if(scanner.queuedToken) {
-        var tok:Token = scanner.queuedToken;
+    if (scanner.queuedToken) {
+        let tok: Token = scanner.queuedToken;
         scanner.queuedToken = null;
         return tok;
     }
 
     if (scanner.index >= scanner.content.length) {
         //if(VERBOSE >= 3) {
-        if((VERBOSE_MASK & ReportFlags.SCANNER_DETAILS) == ReportFlags.SCANNER_DETAILS) {
-            console.log("  scanner - EOF");
+        if ((VERBOSE_MASK & ReportFlags.SCANNER_DETAILS) == ReportFlags.SCANNER_DETAILS) {
+            console.log('  scanner - EOF');
         }
         return scanner.createToken(Keywords.EOF, { skip: false });
     }
 
     let currentCharacter = scanner.nextNonWhitespaceCharacter();
-    if(AUTO_INSERT_SEMICOLONS && scanner.missedSemi) {
+    if (AUTO_INSERT_SEMICOLONS && scanner.missedSemi) {
         // insert semicolon
         // TODO: this is successfully detected, but the insertion doesn not work
         // console.log(">>> [INSERT SEMICOLON] <<<");
@@ -263,7 +262,7 @@ function nextToken(scanner: AS3Scanner): Token {
                 let checkpoint = scanner.getCheckPoint();
                 let nextToken = scanner.nextToken();
                 scanner.rewind(checkpoint);
-                if (nextToken.text !== ">") scanner.inVector = false;
+                if (nextToken.text !== '>') { scanner.inVector = false; }
                 break;
             }
             return scanCharacterSequence(scanner, currentCharacter, ['>>>=', '>>>', '>>=', '>>', '>=']);
@@ -501,7 +500,7 @@ function scanUntilDelimiter(scanner: AS3Scanner, start: string, delimiter: strin
             scanner.skipChars(buffer.toString().length - 1);
             return result;
         }
-        numberOfBackslashes = (currentCharacter === "\\")
+        numberOfBackslashes = (currentCharacter === '\\')
             ? (numberOfBackslashes + 1) % 2
             : 0 ;
     }
@@ -612,7 +611,7 @@ function verifyXML(string: string): boolean {
  * Something started with a lower sign <
  */
 function scanXMLOrOperator(scanner: AS3Scanner, startingCharacterc: string): Token {
-    if(/^[a-z0-9]+$/i.test(scanner.nextChar())) { //HACK: Its only valid xml when the next token is alpha[numeric]
+    if (/^[a-z0-9]+$/i.test(scanner.nextChar())) { //HACK: Its only valid xml when the next token is alpha[numeric]
         scanner.index--;
         let xmlToken = scanXML(scanner);
         if (xmlToken !== null && verifyXML(xmlToken.text)) {

@@ -6,23 +6,22 @@
  * Replace specific types that will clash between AS3 and TS
  */
 
-import Node, { createNode } from "../../syntax/node";
-import NodeKind from "../../syntax/nodeKind";
-import Emitter, { EmitterOptions } from "../../emit/emitter";
+import Node, { createNode } from '../../syntax/node';
+import NodeKind from '../../syntax/nodeKind';
+import Emitter, { EmitterOptions } from '../../emit/emitter';
 
 function visit (emitter: Emitter, node: Node): boolean {
 
     if (
         (node.kind === NodeKind.TYPE || node.kind === NodeKind.IDENTIFIER) &&
-        (node.text === "Date")
+        (node.text === 'Date')
     ) {
-        emitter.ensureImportIdentifier("AwayDate", "@as3web/flash", false);
-    }
-    else if (
+        emitter.ensureImportIdentifier('AwayDate', '@as3web/flash', false);
+    } else if (
         (node.kind === NodeKind.TYPE || node.kind === NodeKind.IDENTIFIER) &&
-        (node.text === "XMLDocument")
+        (node.text === 'XMLDocument')
     ) {
-        emitter.ensureImportIdentifier("XMLDocumentAway", "@as3web/flash", false);
+        emitter.ensureImportIdentifier('XMLDocumentAway', '@as3web/flash', false);
     }
     return false;
 }
@@ -41,4 +40,4 @@ export default {
     visit: visit,
     identifierMap: identifierMap,
     typeMap: typeMap,
-}
+};

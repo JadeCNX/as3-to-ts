@@ -2,9 +2,9 @@
  * Replace Flash errors (from flash.errors.*) with `Error`
  */
 
-import Node, { createNode } from "../../syntax/node";
-import NodeKind from "../../syntax/nodeKind";
-import Emitter, { EmitterOptions, visitNode } from "../../emit/emitter";
+import Node, { createNode } from '../../syntax/node';
+import NodeKind from '../../syntax/nodeKind';
+import Emitter, { EmitterOptions, visitNode } from '../../emit/emitter';
 
 const errorIdentifiers = [
     'DRMManagerError',
@@ -19,7 +19,7 @@ const errorIdentifiers = [
     'StackOverflowError',
 ];
 
-const importReplacement = new RegExp(`import { (${ errorIdentifiers.join("|") }) } from "[^"]+";`, "gm");
+const importReplacement = new RegExp(`import { (${ errorIdentifiers.join('|') }) } from "[^"]+";`, 'gm');
 
 function visit (emitter: Emitter, node: Node): boolean {
 
@@ -32,8 +32,8 @@ function visit (emitter: Emitter, node: Node): boolean {
             let dotLeftNode = node.children[0].children[0];
             let dotRightNode = node.children[0].children[1];
 
-            if (dotRightNode.text === "getStackTrace") {
-                dotRightNode.text = "stack";
+            if (dotRightNode.text === 'getStackTrace') {
+                dotRightNode.text = 'stack';
 
                 emitter.catchup(node.start);
                 emitter.skipTo(node.end);
@@ -51,13 +51,13 @@ function visit (emitter: Emitter, node: Node): boolean {
 
 function postProcessing (emitterOptions: EmitterOptions, contents: string): string {
     // Remove error imports
-    contents = contents.replace(importReplacement, "");
+    contents = contents.replace(importReplacement, '');
 
     return contents;
 }
 
 const typeMap: { [id: string]: string } = errorIdentifiers.reduce(function(result: any, currentValue: string, currentIndex: number) {
-  result[ currentValue ] = "Error";
+  result[ currentValue ] = 'Error';
   return result;
 }, {});
 
@@ -68,4 +68,4 @@ export default {
     postProcessing: postProcessing,
     typeMap: typeMap,
     identifierMap: identifierMap,
-}
+};

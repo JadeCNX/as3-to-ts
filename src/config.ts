@@ -1,4 +1,4 @@
-import {ReportFlags} from './reports/report-flags';
+import { ReportFlags } from './reports/report-flags';
 
 //export const VERBOSE = 3; // 0 none, 1 some, 2 a lot, 3 everything
 // export const VERBOSE_MASK = ReportFlags.CREATE_NODES | ReportFlags.PARSER_POINTS | ReportFlags.KEY_POINTS;//Just place here flags divided br BITWISE OR "|"

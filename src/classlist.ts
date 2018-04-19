@@ -1,2 +1,2 @@
-import {getUsedClasses} from './emit/classlist';
+import { getUsedClasses } from './emit/classlist';
 export = getUsedClasses;

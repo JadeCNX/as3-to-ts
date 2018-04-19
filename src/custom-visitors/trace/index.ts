@@ -6,8 +6,8 @@
  * Replace trace() for console.log()
  */
 
-import Node, { createNode } from "../../syntax/node";
-import Emitter, { EmitterOptions } from "../../emit/emitter";
+import Node, { createNode } from '../../syntax/node';
+import Emitter, { EmitterOptions } from '../../emit/emitter';
 
 function visit (emitter: Emitter, node: Node): boolean {
     return false;
@@ -20,4 +20,4 @@ const identifierMap: { [id: string]: string } = {
 export default {
     visit: visit,
     identifierMap: identifierMap,
-}
+};

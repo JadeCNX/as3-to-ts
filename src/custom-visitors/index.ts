@@ -1,5 +1,5 @@
-import Node from "../syntax/node";
-import Emitter, { EmitterOptions } from "../emit/emitter";
+import Node from '../syntax/node';
+import Emitter, { EmitterOptions } from '../emit/emitter';
 
 export interface CustomVisitor {
     visit: (emitter: Emitter, node: Node) => boolean;

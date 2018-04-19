@@ -6,8 +6,8 @@
  * Fix import statements
  */
 
-import Node, { createNode } from "../../syntax/node";
-import Emitter, { EmitterOptions } from "../../emit/emitter";
+import Node, { createNode } from '../../syntax/node';
+import Emitter, { EmitterOptions } from '../../emit/emitter';
 
 function visit (emitter: Emitter, node: Node): boolean {
     return false;
@@ -16,19 +16,19 @@ function visit (emitter: Emitter, node: Node): boolean {
 function postProcessing (emitterOptions: EmitterOptions, contents: string): string {
 
     //fix import statements for flash package:
-    contents = contents.replace(/import {([ 0-9a-zA-Z]+)} from "[.\/]+flash[^"]+";?/gm, "import {$1} from \"@as3web/flash\"");
+    contents = contents.replace(/import {([ 0-9a-zA-Z]+)} from "[.\/]+flash[^"]+";?/gm, 'import {$1} from "@as3web/flash"');
 
     //fix import statements for away3d package:
-    contents = contents.replace(/import {([ 0-9a-zA-Z]+)} from "[.\/]+away3d[^"]+";?/gm, "import {$1} from \"@as3web/away3d\"");
+    contents = contents.replace(/import {([ 0-9a-zA-Z]+)} from "[.\/]+away3d[^"]+";?/gm, 'import {$1} from "@as3web/away3d"');
 
     //fix import statements for starling package:
-    contents = contents.replace(/import {([ 0-9a-zA-Z]+)} from "[.\/]+starling[^"]+";?/gm, "import {$1} from \"@as3web/flash\"//starling");
+    contents = contents.replace(/import {([ 0-9a-zA-Z]+)} from "[.\/]+starling[^"]+";?/gm, 'import {$1} from "@as3web/flash"//starling');
 
     //fix import statements for com.greensock package:
-    contents = contents.replace(/import {([ 0-9a-zA-Z]+)} from "[.\/]+com\/greensock[^"]+";?/gm, "import {$1} from \"gsap\"//com.greensock");
+    contents = contents.replace(/import {([ 0-9a-zA-Z]+)} from "[.\/]+com\/greensock[^"]+";?/gm, 'import {$1} from "gsap"//com.greensock');
 
     // hack-fix to correct import for XMLDocumentAway
-    contents = contents.replace('import { XMLDocumentAway } from "./XMLDocumentAway";','import { XMLDocumentAway } from "@as3web/flash";');
+    contents = contents.replace('import { XMLDocumentAway } from "./XMLDocumentAway";', 'import { XMLDocumentAway } from "@as3web/flash";');
     //return here if you want to prevent import cleanup
     //return contents;
 
@@ -71,4 +71,4 @@ function postProcessing (emitterOptions: EmitterOptions, contents: string): stri
 export default {
     visit: visit,
     postProcessing: postProcessing
-}
+};

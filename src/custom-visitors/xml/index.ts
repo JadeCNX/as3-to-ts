@@ -1,9 +1,9 @@
-import Node, { createNode } from "../../syntax/node";
-import NodeKind from "../../syntax/nodeKind";
+import Node, { createNode } from '../../syntax/node';
+import NodeKind from '../../syntax/nodeKind';
 import Emitter, {
     EmitterOptions,
     visitNode, emitIdent
-} from "../../emit/emitter";
+} from '../../emit/emitter';
 
 function visit (emitter: Emitter, node: Node): boolean {
 
@@ -11,9 +11,9 @@ function visit (emitter: Emitter, node: Node): boolean {
     // Auto-import XML package. //80pro: added check for IDENTIFIER
     if (
         (node.kind === NodeKind.TYPE || node.kind === NodeKind.IDENTIFIER) &&
-        (node.text === "XML" || node.text === "XMLList")
+        (node.text === 'XML' || node.text === 'XMLList')
     ) {
-        emitter.ensureImportIdentifier("XML, XMLList", "@as3web/flash", false);
+        emitter.ensureImportIdentifier('XML, XMLList', '@as3web/flash', false);
         //80pro emitter.ensureImportIdentifier("XML, XMLList", "xml-e4x", false);
     }
 
@@ -25,51 +25,49 @@ function visit (emitter: Emitter, node: Node): boolean {
         if (leftLiteral) {
             if (leftLiteral.text.indexOf('@') === 0) {
 
-                leftLiteral.text = "attribute";
+                leftLiteral.text = 'attribute';
                 visitNode(emitter, leftLiteral);
-                emitter.skipTo(node.children[0].end+1);
+                emitter.skipTo(node.children[0].end + 1);
 
-                emitter.insert("(");
+                emitter.insert('(');
                 visitNode(emitter, rightNode);
                 emitter.skipTo(rightNode.end);
-                emitter.insert(")");
+                emitter.insert(')');
                 emitter.skipTo(node.end);
 
                 return true;
-            }
-            else {
+            } else {
 
                 // visitNode(emitter, leftLiteral);
                 // visitNode(emitter, rightNode);
                 // emitter.skipTo(rightNode.end);
-				//
+                //
                 // // 80pro hotfix for missing "]"
                 // if(rightNode.kind==NodeKind.ARRAY_ACCESSOR){
                 //     emitter.insert('] ');
                 // }
                 // emitter.insert("].nodeValue");
                 // emitter.skipTo(node.end);
-				//
+                //
                 // return true;
             }
         }
     }
     // Converts xml.@myAttribute to xml.attribute('myAttribute')
-    if (node.text && node.text.indexOf("@") === 0 &&
+    if (node.text && node.text.indexOf('@') === 0 &&
         node.parent.kind !== NodeKind.ARRAY_ACCESSOR) {
 
         // console.log('node: ', node.toString());
 
-        if(isNodeLeft(node)) {
+        if (isNodeLeft(node)) {
 
             let nodeName = node.text.substr(1);
             let afterAcc = isAfterArrayAccessor(node);
             emitter.skipTo(node.end);
-            if (afterAcc)emitter.insert(`]`);
+            if (afterAcc) {emitter.insert(`]`); }
             emitter.insert(`["${ nodeName }"]`);
             return true;
-        }
-        else {
+        } else {
 
             node.text = `attribute("${ node.text.substr(1) }")`;
         }
@@ -78,28 +76,27 @@ function visit (emitter: Emitter, node: Node): boolean {
     return false;
 }
 
-function isNodeLeft(node:Node):boolean {
-    if(node.kind == NodeKind.ASSIGN) { return true; }
-    if(node.parent) {
+function isNodeLeft(node: Node): boolean {
+    if (node.kind == NodeKind.ASSIGN) { return true; }
+    if (node.parent) {
         return isNodeLeft(node.parent);
     }
     return false;
 }
-function isAfterArrayAccessor(node:Node):boolean {
-    let nodeParent = node.parent
-    if(nodeParent) {
+function isAfterArrayAccessor(node: Node): boolean {
+    let nodeParent = node.parent;
+    if (nodeParent) {
         let arrayAccessorNode = nodeParent.findChild(NodeKind.ARRAY_ACCESSOR);
-        if (arrayAccessorNode) return true
+        if (arrayAccessorNode) { return true; }
         let dotNode = nodeParent.findChild(NodeKind.DOT);
-        if (dotNode)
-        {
+        if (dotNode) {
             arrayAccessorNode = dotNode.findChild(NodeKind.ARRAY_ACCESSOR);
-            if (arrayAccessorNode ) return true
+            if (arrayAccessorNode ) { return true; }
         }
     }
-    return false
+    return false;
 }
 
 export default {
     visit: visit
-}
+};

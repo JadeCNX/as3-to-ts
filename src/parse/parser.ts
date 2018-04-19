@@ -33,7 +33,7 @@ import SourceFile from './source-file';
 import AS3Scanner from './scanner';
 import Token from './token';
 import Node from '../syntax/node';
-import {startsWith} from '../string';
+import { startsWith } from '../string';
 
 export const ASDOC_COMMENT = '/**';
 export const MULTIPLE_LINES_COMMENT = '/*';
@@ -45,17 +45,17 @@ export const VECTOR = 'Vector';
  * @author xagnetti
  */
 export default class AS3Parser {
-    sourceFile:SourceFile;
-    currentAsDoc:Node;
-    currentFunctionNode:Node;
-    currentMultiLineComment:Node;
-    isInFor:boolean = false;
-    scn:AS3Scanner;
-    tok:Token;
+    sourceFile: SourceFile;
+    currentAsDoc: Node;
+    currentFunctionNode: Node;
+    currentMultiLineComment: Node;
+    isInFor: boolean = false;
+    scn: AS3Scanner;
+    tok: Token;
 }
 
 
-export function nextToken(parser:AS3Parser, ignoreDocumentation:boolean = false):void {
+export function nextToken(parser: AS3Parser, ignoreDocumentation: boolean = false): void {
     do {
         if (ignoreDocumentation) {
             nextTokenIgnoringDocumentation(parser);
@@ -67,7 +67,7 @@ export function nextToken(parser:AS3Parser, ignoreDocumentation:boolean = false)
 }
 
 
-export function tryParse<T>(parser:AS3Parser, func:() => T):T {
+export function tryParse<T>(parser: AS3Parser, func: () => T): T {
     let checkPoint = parser.scn.getCheckPoint();
     try {
         return func();
@@ -82,7 +82,7 @@ export function tryParse<T>(parser:AS3Parser, func:() => T):T {
  * Compare the current token to the parameter. If it equals, get the next
  * token. If not, throw a runtime exception.
  */
-export function consume(parser:AS3Parser, text:string):Token {
+export function consume(parser: AS3Parser, text: string): Token {
     while (startsWith(parser.tok.text, '//')) {
         nextToken(parser);
     }
@@ -111,7 +111,7 @@ export function consume(parser:AS3Parser, text:string):Token {
  *
  * @throws UnExpectedTokenException
  */
-export function nextTokenAllowNewLine(parser:AS3Parser):void {
+export function nextTokenAllowNewLine(parser: AS3Parser): void {
     do {
         let lastTok = parser.tok;
         parser.tok = parser.scn.nextToken();
@@ -130,7 +130,7 @@ export function nextTokenAllowNewLine(parser:AS3Parser):void {
 }
 
 
-export function nextTokenIgnoringDocumentation(parser:AS3Parser):void {
+export function nextTokenIgnoringDocumentation(parser: AS3Parser): void {
     do {
         nextToken(parser);
     }
@@ -138,13 +138,13 @@ export function nextTokenIgnoringDocumentation(parser:AS3Parser):void {
 }
 
 
-export function skip(parser:AS3Parser, text:string):void {
+export function skip(parser: AS3Parser, text: string): void {
     if (tokIs(parser, text)) {
         nextToken(parser);
     }
 }
 
 
-export function tokIs(parser:AS3Parser, text:string):boolean {
+export function tokIs(parser: AS3Parser, text: string): boolean {
     return parser.tok.text === text;
 }
