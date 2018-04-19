@@ -79,7 +79,28 @@ filesAS.forEach(file => {
     let generatedContents = fs.readFileSync(generatedTsFile).toString();
     let expectedContents = fs.readFileSync(expectedTsFile).toString();
     if(generatedContents !== expectedContents) {
-      console.log(colors.red("  ✗ " + identifier + '.ts ERROR: generated output does not match expected output.'));
+      var i,j = 0;
+      var err = false;
+      while((i < expectedContents.length) && (j < contents.length)) {
+        if(expectedContents[i] != contents[j]){
+          if(expectedContents[i] == '\n') {
+            i++;
+            continue;
+          } else if(contents[j] == '\n') {
+            j++;
+            continue;
+          } else {
+            err = true;
+            break;
+          }
+        }
+      }
+
+      if(err) {
+        console.log(colors.red("  ✗ " + identifier + '.as -> ' + identifier + '.ts ERROR: generated output does not match expected output.'));
+      } else {
+        console.log(colors.yellow("  ~ " + identifier + '.as -> ' + identifier + '.ts WARNING: generated output matches expected output, except whitespace'));
+      }
 
       // Show diff?
       if(showdiff) {
