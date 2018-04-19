@@ -118,7 +118,8 @@ export function nextTokenAllowNewLine(parser:AS3Parser):void {
 
         if (!parser.tok) {
             let {line, col} = parser.sourceFile.getLineAndCharacterFromPosition(lastTok.index);
-            throw new Error(`failed to parse token after ${parser.sourceFile.path}:(${line},${col})`);
+            throw new Error(`failed to parse token after ${parser.sourceFile.path}:(${line},${col})
+                , index: ${lastTok.index}`);
 
         }
         if (parser.tok.text === null) {

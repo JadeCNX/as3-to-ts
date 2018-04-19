@@ -55,7 +55,7 @@ export function parsePrimaryExpression(parser:AS3Parser):Node {
         }
     }
 
-    if (parser.tok.text === '/' || parser.tok.text === '/=') {
+    if (parser.tok.text === Operators.SLASH || parser.tok.text === Operators.DIVIDED_EQUAL) {
         let tok = parser.scn.scanRegExp();
         if (tok) {
             nextToken(parser, true);
