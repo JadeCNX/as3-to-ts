@@ -106,6 +106,8 @@ export function run(): void {
         definitionsByNamespace: definitionsByNamespace
     };
 
+    let numerrors = 0;
+
     files.forEach(file => {
         console.log('(' + ( number + 1 ) + '/' + length + ') \'' + file + '\'');
 
@@ -123,19 +125,31 @@ export function run(): void {
         }
 
         let content = fs.readFileSync(inputFile, 'UTF-8');
-        let ast = parse(path.basename(file), content);
-        let contents = emit(ast, content, emitterOptions);
 
-        visitors.forEach((visitor: CustomVisitor) => {
-            if (visitor.postProcessing) {
-                contents = visitor.postProcessing(emitterOptions, contents);
-            }
-        })
+        try {
+            let ast = parse(path.basename(file), content);
+            let contents = emit(ast, content, emitterOptions);
 
-        fs.outputFileSync(outputFile, contents.replace(/\r\n/g, "\n"));
-        fs.utimesSync(outputFile, nextLockTimestamp, nextLockTimestamp);
+            visitors.forEach((visitor: CustomVisitor) => {
+                if (visitor.postProcessing) {
+                    contents = visitor.postProcessing(emitterOptions, contents);
+                }
+            });
+
+            fs.outputFileSync(outputFile, contents.replace(/\r\n/g, "\n"));
+            fs.utimesSync(outputFile, nextLockTimestamp, nextLockTimestamp);
+        } catch (e) {
+            console.error(`${e}`);
+            numerrors++;
+        }
         number ++;
     });
 
     updateLockTimestamp(outputDir, nextLockTimestamp);
+
+    if (numerrors > 0) {
+        console.error(`${numerrors} files failed to parse, check the log for errors.`);
+    } else {
+        console.info(`All files successfully processed.`);
+    }
 }
