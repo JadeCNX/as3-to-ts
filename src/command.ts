@@ -27,7 +27,7 @@ function readdir(dir: string, prefix = '', result: string[] = []): string[] {
 
 
 function displayHelp(): void {
-    console.log('usage: as3-to-typescript <sourceDir> <outputDir> [options]');
+    console.log('usage: as3-to-typescript <source> <outputDir> [options]');
     console.log('');
     console.log('   Available options:');
     console.log('       --commonjs: ignore AS3 packages on TypeScript output.');
@@ -49,9 +49,9 @@ export function run(): void {
         throw new Error('source dir and output dir are mandatory');
     }
 
-    let sourceDir = path.resolve(process.cwd(), args._[2]);
-    if (!fs.existsSync(sourceDir) || !fs.statSync(sourceDir).isDirectory()) {
-        throw new Error('invalid source dir');
+    let source = path.resolve(process.cwd(), args._[2]);
+    if (!fs.existsSync(source)) {
+        throw new Error('invalid source file/dir');
     }
 
     let outputDir = path.resolve(process.cwd(), args._[3]);
@@ -79,7 +79,14 @@ export function run(): void {
     let previousLockTimestamp = getLockTimestamp(outputDir);
     let nextLockTimestamp = Math.floor((new Date()).getTime() / 1000);
 
-    let files = readdir(sourceDir).filter(file => /.as$/.test(file));
+    let files;
+    if (fs.statSync(source).isDirectory()) {
+        files = readdir(source).filter(file => /.as$/.test(file));
+    } else {
+        files = [path.basename(source)];
+        source =  path.dirname(source);
+    }
+
     let number = 0;
     let length = files.length;
 
@@ -106,11 +113,13 @@ export function run(): void {
         definitionsByNamespace: definitionsByNamespace
     };
 
+    const re = /((?:(?:^[ \t]*)?(?:\/\*[^*]*\*+(?:[^\/*][^*]*\*+)*\/(?:[ \t]*\r?\n(?=[ \t]*(?:\r?\n|\/\*|\/\/)))?|\/\/(?:[^\\]|\\(?:\r?\n)?)*?(?:\r?\n(?=[ \t]*(?:\r?\n|\/\*|\/\/))|(?=\r?\n))))+)|("(?:\\[\S\s]|[^"\\])*"|'(?:\\[\S\s]|[^'\\])*'|(?:\r?\n|[\S\s])[^\/"'\\\s]*)/mg
+
     files.forEach(file => {
         console.log('(' + ( number + 1 ) + '/' + length + ') \'' + file + '\'');
 
         let fileTs = file.replace(/.as$/, '.ts');
-        let inputFile = path.resolve(sourceDir, file);
+        let inputFile = path.resolve(source, file);
         let outputFile = path.resolve(outputDir, fileTs);
 
         if (!overwrite && fs.existsSync(outputFile)) {
@@ -123,6 +132,10 @@ export function run(): void {
         }
 
         let content = fs.readFileSync(inputFile, 'UTF-8');
+
+        //strip comments
+        content = content.replace(re, '$2');
+
         let ast = parse(path.basename(file), content);
         let contents = emit(ast, content, emitterOptions);
 
