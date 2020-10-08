@@ -113,7 +113,7 @@ export function run(): void {
         definitionsByNamespace: definitionsByNamespace
     };
 
-    const re = /((?:(?:^[ \t]*)?(?:\/\*[^*]*\*+(?:[^\/*][^*]*\*+)*\/(?:[ \t]*\r?\n(?=[ \t]*(?:\r?\n|\/\*|\/\/)))?|\/\/(?:[^\\]|\\(?:\r?\n)?)*?(?:\r?\n(?=[ \t]*(?:\r?\n|\/\*|\/\/))|(?=\r?\n))))+)|("(?:\\[\S\s]|[^"\\])*"|'(?:\\[\S\s]|[^'\\])*'|(?:\r?\n|[\S\s])[^\/"'\\\s]*)/mg
+    // const re = /((?:(?:^[ \t]*)?(?:\/\*[^*]*\*+(?:[^\/*][^*]*\*+)*\/(?:[ \t]*\r?\n(?=[ \t]*(?:\r?\n|\/\*|\/\/)))?|\/\/(?:[^\\]|\\(?:\r?\n)?)*?(?:\r?\n(?=[ \t]*(?:\r?\n|\/\*|\/\/))|(?=\r?\n))))+)|("(?:\\[\S\s]|[^"\\])*"|'(?:\\[\S\s]|[^'\\])*'|(?:\r?\n|[\S\s])[^\/"'\\\s]*)/mg
 
     files.forEach(file => {
         console.log('(' + ( number + 1 ) + '/' + length + ') \'' + file + '\'');
@@ -134,7 +134,7 @@ export function run(): void {
         let content = fs.readFileSync(inputFile, 'UTF-8');
 
         //strip comments
-        content = content.replace(re, '$2');
+        // content = content.replace(re, '$2');
 
         let ast = parse(path.basename(file), content);
         let contents = emit(ast, content, emitterOptions);
